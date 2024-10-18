@@ -1,8 +1,27 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as dotenv from 'dotenv';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+dotenv.config();
+
+const PORT = process.env.PORT || 8000;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+  app.enableCors();
+
+  const config = new DocumentBuilder()
+    .setTitle('API Documentation')
+    .setDescription('API description for your project')
+    .setVersion('1.0')
+    .addTag('users')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+
+  await app.listen(PORT);
 }
+
 bootstrap();
