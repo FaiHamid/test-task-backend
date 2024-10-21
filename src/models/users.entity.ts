@@ -6,6 +6,7 @@ import {
   AutoIncrement,
   DataType,
   ForeignKey,
+  BelongsTo,
 } from 'sequelize-typescript';
 import { Role } from './roles.entity';
 
@@ -58,11 +59,14 @@ export class User extends Model {
     type: DataType.TEXT,
     allowNull: true,
   })
-  accessesToken: string | null;
+  accessToken: string | null;
 
   @ForeignKey(() => Role)
   @Column
   idRole: number;
+
+  @BelongsTo(() => Role)
+  role: Role;
 
   @Column({
     type: DataType.DATE,

@@ -20,9 +20,25 @@ export class Session extends Model {
     type: DataType.TEXT,
     allowNull: true,
   })
-  refreshToken: string | null;
+  refreshtoken: string | null;
 
   @ForeignKey(() => User)
   @Column
-  idUser: number;
+  iduser: number;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+    defaultValue: DataType.NOW,
+    field: 'createdat',
+  })
+  createdAt: Date;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+    defaultValue: DataType.NOW,
+    field: 'updatedat',
+  })
+  updatedAt: Date;
 }

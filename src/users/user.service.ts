@@ -1,11 +1,22 @@
 import { INormalizedUser } from 'src/types/normalizeUser';
 import { User } from '../models/users.entity';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { Role } from 'src/models/roles.entity';
 
 @Injectable()
 export class UserService {
-  normalize({ name, surname, email, avatar }: User): INormalizedUser {
-    return { name, surname, email, avatar };
+  constructor(
+    @Inject('USERS_REPOSITORY') private userRepository: typeof User,
+  ) {}
+
+  normalize({
+    name,
+    surname,
+    email,
+    avatar,
+    accessToken,
+  }: User): INormalizedUser {
+    return { name, surname, email, avatar, accessToken };
   }
 
   validateEmail(email: string): string {
@@ -21,7 +32,7 @@ export class UserService {
   }
 
   async activateUser(activationToken: string) {
-    const user = await User.findOne({
+    const user = await this.userRepository.findOne({
       where: { activationToken },
     });
 
@@ -33,6 +44,28 @@ export class UserService {
     user.activationToken = null;
     await user.save();
 
+    return user;
+  }
+
+  async findOneByActivationToken(
+    activationToken: string,
+  ): Promise<User | undefined> {
+    return await this.userRepository.findOne({
+      where: { activationToken },
+    });
+  }
+
+  async findOneByEmail(email: string): Promise<User | undefined> {
+    return await this.userRepository.findOne({
+      where: { email },
+    });
+  }
+
+  async getUserWithRole(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      include: [{ model: Role }],
+    });
     return user;
   }
 }

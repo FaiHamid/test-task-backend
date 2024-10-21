@@ -63,4 +63,11 @@ export class Company extends Model {
   @ForeignKey(() => User)
   @Column
   idUser: number;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+    defaultValue: DataType.NOW,
+  })
+  updatedAt: Date;
 }

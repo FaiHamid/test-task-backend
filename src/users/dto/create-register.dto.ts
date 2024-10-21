@@ -6,6 +6,7 @@ export class RegisterUserDto {
   email: string;
   password: string;
   activationToken: string;
+  accessToken: string;
   idRole: number;
   avatar?: string;
 }

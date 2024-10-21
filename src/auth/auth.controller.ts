@@ -1,25 +1,33 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Inject, Post, Res, UseGuards } from '@nestjs/common';
 import { RegisterUserDto } from 'src/users/dto/create-register.dto';
 import { AuthService } from './auth.service';
 import { MailService } from '../services/mail.service';
 import { UserRegistrationException } from 'src/services/exception.service';
 import { Role } from '../models/roles.entity';
+import { UserService } from 'src/users/user.service';
+import { IReqLoginUser } from 'src/types/normalizeUser';
+import { AuthGuard } from '@nestjs/passport';
+import { ERole } from 'src/types/roles.enum';
 
-@Controller('register')
-export class RegisterController {
+@Controller()
+export class AuthController {
   constructor(
     @Inject('ROLES_REPOSITORY') private rolesRepository: typeof Role,
     private readonly authService: AuthService,
-    private readonly mailService: MailService
+    private readonly mailService: MailService,
+    private userService: UserService,
   ) {}
 
-  @Post()
+  @Post('register')
   async create(
     @Body() registerUserDto: Omit<RegisterUserDto, 'activationToken'>,
   ) {
     const activationToken = uuidv4();
-    const role = await this.rolesRepository.findOne({ where: { role: 'user' } }); 
+
+    const role = await this.rolesRepository.findOne({
+      where: { role: ERole.User },
+    });
     const newUser = await this.authService.register({
       ...registerUserDto,
       activationToken,
@@ -32,9 +40,20 @@ export class RegisterController {
 
     await this.mailService.sendActivationEmail(
       registerUserDto.email,
-      activationToken,
+      newUser.activationToken,
     );
 
-    return newUser;
+    return this.userService.normalize(newUser);
+  }
+
+  @UseGuards(AuthGuard('local'))
+  @Post('login')
+  async login(@Body() loginUser: IReqLoginUser, @Res() res) {
+    const responseUser = await this.authService.sendAuthentication(
+      loginUser,
+      res,
+    );
+
+    return res.json(responseUser);
   }
 }
