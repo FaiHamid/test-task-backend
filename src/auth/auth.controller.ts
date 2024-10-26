@@ -1,5 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Body, Controller, Inject, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { RegisterUserDto } from 'src/users/dto/create-register.dto';
 import { AuthService } from './auth.service';
 import { MailService } from '../services/mail.service';
@@ -9,6 +18,9 @@ import { UserService } from 'src/users/user.service';
 import { IReqLoginUser } from 'src/types/normalizeUser';
 import { AuthGuard } from '@nestjs/passport';
 import { ERole } from 'src/types/roles.enum';
+import { Request, Response } from 'express';
+import { CustomJwtService } from 'src/services/jwt.services';
+import { TokensService } from 'src/services/tokens.service';
 
 @Controller()
 export class AuthController {
@@ -17,6 +29,8 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly mailService: MailService,
     private userService: UserService,
+    private jwtService: CustomJwtService,
+    private tokenService: TokensService,
   ) {}
 
   @Post('register')
@@ -49,11 +63,22 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(@Body() loginUser: IReqLoginUser, @Res() res) {
+    console.log('hello');
     const responseUser = await this.authService.sendAuthentication(
       loginUser,
       res,
     );
 
     return res.json(responseUser);
+  }
+
+  @Post('logout')
+  async logout(@Req() req: Request, @Res() res: Response) {
+    return await this.authService.logout(req, res);
+  }
+
+  @Get('refresh')
+  async refresh(@Req() req: Request, @Res() res: Response) {
+    return await this.authService.refresh(req, res);
   }
 }

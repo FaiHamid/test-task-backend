@@ -1,11 +1,13 @@
-import { Inject, Injectable, Res } from '@nestjs/common';
+import { Inject, Injectable, Req, Res } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from 'src/users/dto/create-register.dto';
 import { User } from 'src/models/users.entity';
 import { UserService } from 'src/users/user.service';
 import { CustomJwtService } from 'src/services/jwt.services';
 import { Session } from 'src/models/sessions.entity';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { TokensService } from 'src/services/tokens.service';
+import { UserRegistrationException } from 'src/services/exception.service';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +17,7 @@ export class AuthService {
     @Inject('USERS_REPOSITORY') private userRepository: typeof User,
     private userService: UserService,
     private jwtService: CustomJwtService,
+    private tokenService: TokensService,
   ) {}
 
   async register(registerUserDto: RegisterUserDto): Promise<User | string> {
@@ -44,11 +47,9 @@ export class AuthService {
   }
 
   async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.userService.findOneByEmail(email);
-    console.log('I`m here');
+    const user = await this.userService.findOneByEmail(email.trim());
 
     if (!user) {
-      console.log(`User not found for email: ${email}`);
       return null;
     }
 
@@ -64,7 +65,6 @@ export class AuthService {
   }
 
   async sendAuthentication(user: any, @Res() res: Response) {
-    console.log(user);
     const userData = await this.userService.findOneByEmail(user.email);
 
     const accessToken = this.jwtService.generateAccessToken(user);
@@ -75,19 +75,51 @@ export class AuthService {
       refreshtoken: refreshToken,
     });
 
-    console.log('her1e');
     userData.accessToken = accessToken;
     await userData.save();
-    console.log('her2e');
+
     res.cookie('refreshToken', refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: 'none',
       secure: true,
     });
-    console.log('her3e');
-    const normUser = this.userService.normalize(userData);
-    console.log('normUser', normUser);
-    return normUser;
+
+    return await this.userService.normalize(userData);;
+  }
+
+  async logout(@Req() req: Request, @Res() res: Response) {
+    const { refreshToken } = req.cookies;
+
+    const userEmail = await this.jwtService.validateRefreshToken(refreshToken);
+    const userData = await this.userService.findOneByEmail(userEmail?.email);
+
+    res.clearCookie('refreshToken');
+
+    if (userData) {
+      await this.userService.updateAccessToken(userData.id, null);
+      await this.tokenService.removeToken(userData.id.toString());
+    }
+
+    res.sendStatus(204);
+  }
+
+  async refresh(@Req() req: Request, @Res() res: Response) {
+    const { refreshToken } = req.cookies;
+    const userData = this.jwtService.validateRefreshToken(refreshToken);
+
+    if (!userData) {
+      throw new UserRegistrationException('Don`t have refresh token');
+    }
+
+    const token = await this.tokenService.getByToken(refreshToken);
+
+    if (!token) {
+      throw new UserRegistrationException('Don`t have refresh token');
+    }
+
+    const user = await this.userService.findOneByEmail(userData.email);
+
+    return await this.sendAuthentication(user, res);
   }
 }

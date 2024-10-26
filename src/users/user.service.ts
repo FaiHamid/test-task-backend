@@ -55,6 +55,13 @@ export class UserService {
     });
   }
 
+  async findOneByAccessToken(accessToken: string): Promise<User | undefined> {
+    console.log('hello find');
+    return await this.userRepository.findOne({
+      where: { accessToken },
+    });
+  }
+
   async findOneByEmail(email: string): Promise<User | undefined> {
     return await this.userRepository.findOne({
       where: { email },
@@ -67,5 +74,15 @@ export class UserService {
       include: [{ model: Role }],
     });
     return user;
+  }
+
+  async updateAccessToken(
+    userId: number,
+    accessToken: string | null,
+  ): Promise<void> {
+    await this.userRepository.update(
+      { accessToken },
+      { where: { id: userId } },
+    );
   }
 }

@@ -14,6 +14,7 @@ import { sessionsProviders } from 'src/session/session.provider';
 import { JwtAuthGuard } from '../middleware/auth.middleware';
 import * as dotenv from 'dotenv';
 import { TokensService } from 'src/services/tokens.service';
+import { CookiesModule } from 'src/middleware/cookie.middleware';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ dotenv.config();
       secret: process.env.JWT_ACCESS_SECRET,
       signOptions: { expiresIn: '5m' },
     }),
+    CookiesModule,
   ],
   controllers: [AuthController, ActivateController],
   providers: [

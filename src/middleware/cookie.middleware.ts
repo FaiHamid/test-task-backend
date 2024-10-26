@@ -1,10 +1,9 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
-import { Request, Response, NextFunction } from 'express';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import cookieParser from 'cookie-parser';
 
-@Injectable()
-export class CookieMiddleware implements NestMiddleware {
-  use(req: Request, res: Response, next: NextFunction) {
-    cookieParser()(req, res, next);
+@Module({})
+export class CookiesModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(cookieParser()).forRoutes('*');
   }
 }

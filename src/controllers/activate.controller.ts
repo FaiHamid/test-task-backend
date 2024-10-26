@@ -4,10 +4,12 @@ import {
   Inject,
   NotFoundException,
   Param,
+  Res,
 } from '@nestjs/common';
 import { UserService } from 'src/users/user.service';
 import { AuthService } from '../auth/auth.service';
 import { User } from 'src/models/users.entity';
+import { Response } from 'express';
 
 @Controller('activate/:activationToken')
 export class ActivateController {
@@ -18,15 +20,12 @@ export class ActivateController {
   ) {}
 
   @Get()
-  async activate(@Param('activationToken') activationToken: string) {
+  async activate(
+    @Param('activationToken') activationToken: string,
+    @Res() res: Response,
+  ) {
     const user =
       await this.usersService.findOneByActivationToken(activationToken);
-    const user2 = await this.userRepository.findOne({
-      where: { activationToken },
-    });
-    console.log('server user:', user);
-    console.log('server user2:', user2);
-    console.log('server activationToken:', activationToken);
 
     if (!user) {
       throw new NotFoundException('User not found or invalid activation token');
@@ -35,6 +34,12 @@ export class ActivateController {
     user.activationToken = null;
     await user.save();
 
-    return this.usersService.normalize(user);
+    const resp = await this.authService.sendAuthentication(
+      { email: user.email },
+      res,
+    );
+    console.log('Sending response:', resp);
+
+    return res.json(resp);
   }
 }

@@ -24,7 +24,7 @@ export class CompaniesController {
     }
 
     const role = user.role.role;
-
+    //switch case
     if (role === ERole.Super_Admin) {
       return this.companiesService.getAllCompanies();
     }
