@@ -1,21 +1,24 @@
 import {
+  Body,
   Controller,
   Get,
+  Post,
   Request,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ERole } from 'src/types/roles.enum';
 import { UserService } from 'src/users/user.service';
 import { CompaniesService } from './companies.service';
+import { CompaniesDto } from './dto/create-company.dto';
 
-@Controller()
+@Controller('companies')
 export class CompaniesController {
   constructor(
     private userService: UserService,
     private companiesService: CompaniesService,
   ) {}
 
-  @Get('companies')
+  @Get()
   async getAllCompanies(@Request() req) {
     const user = await this.userService.getUserWithRole(req.user.id);
 
@@ -42,6 +45,11 @@ export class CompaniesController {
     );
   }
 
-  @Get('companies/:idCompany')
+  @Get(':idCompany')
   async getCompany() {}
+
+  @Post()
+  async addCompany(@Body() companiesDto: CompaniesDto) {
+    this.companiesService.addNewCompany(companiesDto);
+  }
 }

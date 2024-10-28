@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
+import { json, urlencoded } from 'express';
 
 dotenv.config();
 
@@ -14,7 +15,8 @@ async function bootstrap() {
     origin: process.env.CLIENT_URL,
     credentials: true,
   });
-
+  app.use(json({ limit: '500kb' }));
+  app.use(urlencoded({ extended: true, limit: '500kb' }));
   app.use(cookieParser());
 
   const config = new DocumentBuilder()

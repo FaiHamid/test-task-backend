@@ -1,8 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { Company } from 'src/models/companies.entity';
+import { CompaniesDto } from './dto/create-company.dto';
 
 @Injectable()
 export class CompaniesService {
-  constructor() {}
+  constructor(
+    @Inject('COMPANIES_REPOSITORY') private userRepository: typeof Company,
+  ) {}
 
   async getAllCompanies() {
     try {
@@ -18,6 +22,12 @@ export class CompaniesService {
   async getUserCompanies(userId: number) {
     try {
       return userId;
+    } catch {}
+  }
+
+  async addNewCompany(newCompanyData: CompaniesDto) {
+    try {
+      return newCompanyData;
     } catch {}
   }
 }

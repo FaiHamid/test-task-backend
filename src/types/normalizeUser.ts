@@ -1,4 +1,5 @@
 export interface INormalizedUser {
+  id: number;
   name: string;
   surname: string;
   email: string;
@@ -9,4 +10,12 @@ export interface INormalizedUser {
 export interface IReqLoginUser {
   email: string;
   password: string;
+}
+
+export interface IUserToChange {
+  name?: string;
+  surname?: string;
+  avatar?: string;
+  hashPassword?: string;
+  password?: string;
 }

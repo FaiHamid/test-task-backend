@@ -1,7 +1,9 @@
-import { INormalizedUser } from 'src/types/normalizeUser';
+import { INormalizedUser, IUserToChange } from 'src/types/normalizeUser';
 import { User } from '../models/users.entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { Role } from 'src/models/roles.entity';
+import * as bcrypt from 'bcrypt';
+import { UserRegistrationException } from 'src/services/exception.service';
 
 @Injectable()
 export class UserService {
@@ -10,13 +12,14 @@ export class UserService {
   ) {}
 
   normalize({
+    id,
     name,
     surname,
     email,
     avatar,
     accessToken,
   }: User): INormalizedUser {
-    return { name, surname, email, avatar, accessToken };
+    return { id, name, surname, email, avatar, accessToken };
   }
 
   validateEmail(email: string): string {
@@ -68,6 +71,12 @@ export class UserService {
     });
   }
 
+  async findOneById(id: number): Promise<User | undefined> {
+    return await this.userRepository.findOne({
+      where: { id },
+    });
+  }
+
   async getUserWithRole(userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
@@ -84,5 +93,30 @@ export class UserService {
       { accessToken },
       { where: { id: userId } },
     );
+  }
+
+  async updateUser(userId: number, userData: IUserToChange) {
+    const user = await this.findOneById(userId);
+    if (userData.hashPassword) {
+      const isValidPassword = await bcrypt.compare(
+        userData.password,
+        user.hashPassword,
+      );
+
+      if (!isValidPassword) {
+        throw new UserRegistrationException('Incorrect old password');
+      }
+      delete userData.password;
+      const hashedPassword = await bcrypt.hash(userData.hashPassword, 10);
+      userData.hashPassword = hashedPassword;
+    }
+
+    await this.userRepository.update(userData, {
+      where: { id: userId },
+    });
+
+    const updatedUser = await this.findOneById(userId);
+
+    return this.normalize(updatedUser);
   }
 }

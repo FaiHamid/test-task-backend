@@ -85,7 +85,7 @@ export class AuthService {
       secure: true,
     });
 
-    return await this.userService.normalize(userData);;
+    return await this.userService.normalize(userData);
   }
 
   async logout(@Req() req: Request, @Res() res: Response) {
