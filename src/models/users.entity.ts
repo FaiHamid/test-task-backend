@@ -44,8 +44,7 @@ export class User extends Model {
 
   @Column({
     type: DataType.TEXT,
-    defaultValue:
-      'https://drive.google.com/uc?id=1_r1EryhdGp59FgxZL5ux0AIyFBh4adbV',
+    defaultValue: 'https://i.imgur.com/aX3x1wT.png',
   })
   avatar: string;
 

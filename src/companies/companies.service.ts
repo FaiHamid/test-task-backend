@@ -1,11 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Company } from 'src/models/companies.entity';
-import { CompaniesDto } from './dto/create-company.dto';
+import { CompaniesDtoWithPrice } from './dto/create-company.dto';
+import { UserRegistrationException } from 'src/services/exception.service';
+import { PriceHistory } from 'src/models/price_history.entity';
 
 @Injectable()
 export class CompaniesService {
   constructor(
-    @Inject('COMPANIES_REPOSITORY') private userRepository: typeof Company,
+    @Inject('COMPANIES_REPOSITORY') private companiesRepository: typeof Company,
+    @Inject('PRICE_HISTORY_REPOSITORY')
+    private priceHistoryRepository: typeof PriceHistory,
   ) {}
 
   async getAllCompanies() {
@@ -25,9 +29,19 @@ export class CompaniesService {
     } catch {}
   }
 
-  async addNewCompany(newCompanyData: CompaniesDto) {
+  async addNewCompany(newCompanyData: CompaniesDtoWithPrice) {
     try {
-      return newCompanyData;
-    } catch {}
+      const { price, ...companyData } = newCompanyData;
+
+      const createdCompany = await this.companiesRepository.create(companyData);
+      await this.priceHistoryRepository.create({
+        companyid: createdCompany.id,
+        price,
+      });
+
+      return createdCompany;
+    } catch {
+      throw new UserRegistrationException('Something went wrong');
+    }
   }
 }

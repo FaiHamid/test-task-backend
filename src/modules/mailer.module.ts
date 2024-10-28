@@ -20,7 +20,7 @@ dotenv.config();
           },
         },
         defaults: {
-          from: process.env.SMTP_USER
+          from: process.env.SMTP_USER,
         },
         template: {
           dir: __dirname + '/templates',

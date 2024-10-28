@@ -97,6 +97,7 @@ export class UserService {
 
   async updateUser(userId: number, userData: IUserToChange) {
     const user = await this.findOneById(userId);
+
     if (userData.hashPassword) {
       const isValidPassword = await bcrypt.compare(
         userData.password,

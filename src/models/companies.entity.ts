@@ -30,8 +30,7 @@ export class Company extends Model {
 
   @Column({
     type: DataType.TEXT,
-    defaultValue:
-      'https://drive.google.com/uc?id=1_S3QcBikoS4cngAwaXCule5IFMsw_MPx',
+    defaultValue: 'https://i.imgur.com/5MRjPJ9.png',
   })
   logotype: string;
 

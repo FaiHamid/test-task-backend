@@ -9,7 +9,7 @@ import {
 import { ERole } from 'src/types/roles.enum';
 import { UserService } from 'src/users/user.service';
 import { CompaniesService } from './companies.service';
-import { CompaniesDto } from './dto/create-company.dto';
+import { CompaniesDtoWithPrice } from './dto/create-company.dto';
 
 @Controller('companies')
 export class CompaniesController {
@@ -49,7 +49,7 @@ export class CompaniesController {
   async getCompany() {}
 
   @Post()
-  async addCompany(@Body() companiesDto: CompaniesDto) {
-    this.companiesService.addNewCompany(companiesDto);
+  async addCompany(@Body() companiesDto: CompaniesDtoWithPrice) {
+    await this.companiesService.addNewCompany(companiesDto);
   }
 }

@@ -1,5 +1,5 @@
-export class CompaniesDto {
-  id: string;
+export class CompaniesDtoWithPrice {
+  id: number;
   name: string;
   capital: number;
   service: string;
@@ -7,4 +7,7 @@ export class CompaniesDto {
   longitude?: string;
   idUser: number;
   logotype?: string;
+  price: number;
 }
+
+export type CompaniesDto = Omit<CompaniesDtoWithPrice, 'price'>;

@@ -6,7 +6,7 @@ import { UsersModule } from './users/userModules';
 import { CustomMailerModule } from './modules/mailer.module';
 import { AuthModule } from './auth/auth.module';
 import { CookiesModule } from './middleware/cookie.middleware';
-import { sessionsProviders } from './session/session.provider';
+import { sessionsProviders } from './providers/session.provider';
 
 @Module({
   imports: [
