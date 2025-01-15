@@ -5,11 +5,13 @@ import {
   Post,
   Request,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { ERole } from 'src/types/roles.enum';
 import { UserService } from 'src/users/user.service';
 import { CompaniesService } from './companies.service';
 import { CompaniesDtoWithPrice } from './dto/create-company.dto';
+import { JwtAuthGuard } from 'src/middleware/jwt-auth.guard';
 
 @Controller('companies')
 export class CompaniesController {
@@ -18,6 +20,7 @@ export class CompaniesController {
     private companiesService: CompaniesService,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllCompanies(@Request() req) {
     const user = await this.userService.getUserWithRole(req.user.id);
@@ -27,7 +30,7 @@ export class CompaniesController {
     }
 
     const role = user.role.role;
-    //switch case
+
     if (role === ERole.Super_Admin) {
       return this.companiesService.getAllCompanies();
     }

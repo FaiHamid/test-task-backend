@@ -14,18 +14,23 @@ export class CompaniesService {
 
   async getAllCompanies() {
     try {
+      return await this.companiesRepository.findAll();
     } catch {}
   }
 
   async getAdminCompanies(adminId: number) {
     try {
-      return adminId;
+      return await this.companiesRepository.findAll({
+        where: { idUser: adminId },
+      });
     } catch {}
   }
 
   async getUserCompanies(userId: number) {
     try {
-      return userId;
+      return await this.companiesRepository.findAll({
+        where: { idUser: userId },
+      });
     } catch {}
   }
 

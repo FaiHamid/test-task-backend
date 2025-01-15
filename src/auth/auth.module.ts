@@ -11,7 +11,6 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { CustomJwtService } from 'src/services/jwt.services';
 import { sessionsProviders } from 'src/providers/session.provider';
-import { JwtAuthGuard } from '../middleware/auth.middleware';
 import * as dotenv from 'dotenv';
 import { TokensService } from 'src/services/tokens.service';
 import { CookiesModule } from 'src/middleware/cookie.middleware';
@@ -23,7 +22,7 @@ dotenv.config();
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET,
-      signOptions: { expiresIn: '5m' },
+      signOptions: { expiresIn: '10m' },
     }),
     CookiesModule,
   ],
@@ -37,7 +36,6 @@ dotenv.config();
     MailService,
     LocalStrategy,
     CustomJwtService,
-    JwtAuthGuard,
     TokensService,
   ],
 })
