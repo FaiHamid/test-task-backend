@@ -7,6 +7,7 @@ import { CustomMailerModule } from './modules/mailer.module';
 import { AuthModule } from './auth/auth.module';
 import { CookiesModule } from './middleware/cookie.middleware';
 import { sessionsProviders } from './providers/session.provider';
+import { CompaniesModule } from './companies/companies.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { sessionsProviders } from './providers/session.provider';
     CustomMailerModule,
     AuthModule,
     CookiesModule,
+    CompaniesModule,
   ],
   controllers: [AppController],
   providers: [AppService, ...sessionsProviders],

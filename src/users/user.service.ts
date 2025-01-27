@@ -59,10 +59,11 @@ export class UserService {
   }
 
   async findOneByAccessToken(accessToken: string): Promise<User | undefined> {
-    console.log('hello find');
-    return await this.userRepository.findOne({
+    const resp = await this.userRepository.findOne({
       where: { accessToken },
     });
+
+    return resp;
   }
 
   async findOneByEmail(email: string): Promise<User | undefined> {
@@ -77,9 +78,9 @@ export class UserService {
     });
   }
 
-  async getUserWithRole(userId: string) {
+  async getUserWithRole(email: string) {
     const user = await this.userRepository.findOne({
-      where: { id: userId },
+      where: { email },
       include: [{ model: Role }],
     });
     return user;

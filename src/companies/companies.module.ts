@@ -6,6 +6,9 @@ import { CompaniesController } from './companies.controller';
 import { JwtStrategy } from 'src/middleware/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { priceHistoryProviders } from 'src/providers/priceHistory';
+import { usersProviders } from 'src/providers/users.provider';
+import { UserService } from 'src/users/user.service';
 
 @Module({
   imports: [
@@ -17,6 +20,13 @@ import { JwtModule } from '@nestjs/jwt';
     }),
   ],
   controllers: [CompaniesController],
-  providers: [...companiesProviders, CompaniesService, JwtStrategy],
+  providers: [
+    ...companiesProviders,
+    ...priceHistoryProviders,
+    ...usersProviders,
+    UserService,
+    CompaniesService,
+    JwtStrategy,
+  ],
 })
 export class CompaniesModule {}

@@ -38,7 +38,6 @@ export class ActivateController {
       { email: user.email },
       res,
     );
-    console.log('Sending response:', resp);
 
     return res.json(resp);
   }

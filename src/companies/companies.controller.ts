@@ -23,7 +23,7 @@ export class CompaniesController {
   @UseGuards(JwtAuthGuard)
   @Get()
   async getAllCompanies(@Request() req) {
-    const user = await this.userService.getUserWithRole(req.user.id);
+    const user = await this.userService.getUserWithRole(req.user.email);
 
     if (!user) {
       throw new UnauthorizedException('User not found');

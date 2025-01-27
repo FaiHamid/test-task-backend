@@ -16,7 +16,6 @@ export class UserController {
     const checkingValidToken = this.jwtService.validateAccessToken(
       params.token,
     );
-    console.log('checkingValidToken', checkingValidToken);
 
     if (!checkingValidToken) {
       throw new UserRegistrationException('Token Expired');

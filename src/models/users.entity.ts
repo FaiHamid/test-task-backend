@@ -57,6 +57,7 @@ export class User extends Model {
   @Column({
     type: DataType.TEXT,
     allowNull: true,
+    field: 'accesstoken',
   })
   accessToken: string | null;
 

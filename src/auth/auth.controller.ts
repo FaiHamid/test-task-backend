@@ -63,7 +63,6 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(@Body() loginUser: IReqLoginUser, @Res() res) {
-    console.log('hello');
     const responseUser = await this.authService.sendAuthentication(
       loginUser,
       res,
