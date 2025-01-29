@@ -40,6 +40,7 @@ export class CompaniesController {
     }
 
     if (role === ERole.User) {
+      console.log('im user');
       return this.companiesService.getUserCompanies(user.id);
     }
 
@@ -51,8 +52,11 @@ export class CompaniesController {
   @Get(':idCompany')
   async getCompany() {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async addCompany(@Body() companiesDto: CompaniesDtoWithPrice) {
+    console.log('hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii');
+    console.log(companiesDto);
     await this.companiesService.addNewCompany(companiesDto);
   }
 }

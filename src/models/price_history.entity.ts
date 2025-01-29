@@ -23,8 +23,10 @@ export class PriceHistory extends Model {
   price: number;
 
   @ForeignKey(() => Company)
-  @Column
-  companyid: number;
+  @Column({
+    field: 'companyid',
+  })
+  companyId: number;
 
   @Column({
     type: DataType.DATE,

@@ -1,5 +1,4 @@
 export class CompaniesDtoWithPrice {
-  id: number;
   name: string;
   capital: number;
   service: string;

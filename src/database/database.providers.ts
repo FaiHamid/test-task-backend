@@ -4,6 +4,7 @@ import { Role } from '../models/roles.entity';
 import { Session } from '../models/sessions.entity';
 import { Company } from '../models/companies.entity';
 import * as dotenv from 'dotenv';
+import { PriceHistory } from 'src/models/price_history.entity';
 
 dotenv.config();
 
@@ -25,7 +26,7 @@ export const databaseProviders = [
           },
         },
       });
-      sequelize.addModels([User, Role, Session, Company]);
+      sequelize.addModels([User, Role, Session, Company, PriceHistory]);
       await sequelize.sync();
       return sequelize;
     },

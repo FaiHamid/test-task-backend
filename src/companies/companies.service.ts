@@ -28,24 +28,30 @@ export class CompaniesService {
 
   async getUserCompanies(userId: number) {
     try {
-      return await this.companiesRepository.findAll({
+      const resp = await this.companiesRepository.findAll({
         where: { idUser: userId },
       });
-    } catch {}
+
+      return resp;
+    } catch (error) {
+      console.log('error', error);
+    }
   }
 
   async addNewCompany(newCompanyData: CompaniesDtoWithPrice) {
     try {
       const { price, ...companyData } = newCompanyData;
-
+      console.log('adding company');
       const createdCompany = await this.companiesRepository.create(companyData);
-      await this.priceHistoryRepository.create({
-        companyid: createdCompany.id,
+      console.log('createdCompany', createdCompany.id);
+      const resp = await this.priceHistoryRepository.create({
+        companyId: createdCompany.id,
         price,
       });
-
+      console.log('add price', resp);
       return createdCompany;
-    } catch {
+    } catch (error) {
+      console.log('error', error);
       throw new UserRegistrationException('Something went wrong');
     }
   }

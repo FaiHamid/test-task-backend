@@ -38,6 +38,7 @@ export class Company extends Model {
     type: DataType.DATE,
     allowNull: false,
     defaultValue: DataType.NOW,
+    field: 'createdat',
   })
   createdAt: Date;
 
@@ -60,13 +61,16 @@ export class Company extends Model {
   capital: number;
 
   @ForeignKey(() => User)
-  @Column
+  @Column({
+    field: 'iduser',
+  })
   idUser: number;
 
   @Column({
     type: DataType.DATE,
     allowNull: false,
     defaultValue: DataType.NOW,
+    field: 'updatedat',
   })
   updatedAt: Date;
 }
